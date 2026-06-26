@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '',
+  baseURL: import.meta.env.VITE_API_URL || 'https://glory-simon-api-9341.loca.lt',
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'bypass-tunnel-reminder': 'true'
   }
 });
 
