@@ -15,7 +15,11 @@ const Navbar = () => {
     navigate('/');
   };
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => {
+    const fullPath = location.pathname + location.hash;
+    if (path === '/' && (fullPath === '/' || fullPath === '/#home')) return true;
+    return fullPath === path;
+  };
 
   const linkClass = (path) =>
     `px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
@@ -38,11 +42,23 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/" className={linkClass('/')}>
-              Showcase
+            <Link to="/#home" className={linkClass('/#home')}>
+              Home
+            </Link>
+            <Link to="/#about" className={linkClass('/#about')}>
+              About Us
+            </Link>
+            <Link to="/#services" className={linkClass('/#services')}>
+              Services
+            </Link>
+            <Link to="/#portfolio" className={linkClass('/#portfolio')}>
+              Portfolio
+            </Link>
+            <Link to="/#contact" className={linkClass('/#contact')}>
+              Contact
             </Link>
             <Link to="/enquire" className={linkClass('/enquire')}>
-              Request Consultation
+              Get Quote
             </Link>
 
             {isAuthenticated ? (
@@ -58,7 +74,7 @@ const Navbar = () => {
                   </span>
                 </Link>
                 <button
-                  onClick={handleLogout}
+                   onClick={handleLogout}
                   className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-rose-500 hover:text-rose-600 transition-colors"
                 >
                   <LogOut className="w-4 h-4" /> Logout
@@ -90,18 +106,46 @@ const Navbar = () => {
       {isOpen && (
         <div className="md:hidden bg-luxury-cream dark:bg-luxury-dark border-t border-luxury-brass/10 px-2 pt-2 pb-4 space-y-1 sm:px-3 animate-fade-in transition-colors duration-300">
           <Link
-            to="/"
+            to="/#home"
             onClick={() => setIsOpen(false)}
             className="block px-3 py-2 rounded-md text-base font-medium text-luxury-slate dark:text-luxury-ivory hover:bg-luxury-brass/10"
           >
-            Showcase
+            Home
+          </Link>
+          <Link
+            to="/#about"
+            onClick={() => setIsOpen(false)}
+            className="block px-3 py-2 rounded-md text-base font-medium text-luxury-slate dark:text-luxury-ivory hover:bg-luxury-brass/10"
+          >
+            About Us
+          </Link>
+          <Link
+            to="/#services"
+            onClick={() => setIsOpen(false)}
+            className="block px-3 py-2 rounded-md text-base font-medium text-luxury-slate dark:text-luxury-ivory hover:bg-luxury-brass/10"
+          >
+            Services
+          </Link>
+          <Link
+            to="/#portfolio"
+            onClick={() => setIsOpen(false)}
+            className="block px-3 py-2 rounded-md text-base font-medium text-luxury-slate dark:text-luxury-ivory hover:bg-luxury-brass/10"
+          >
+            Portfolio
+          </Link>
+          <Link
+            to="/#contact"
+            onClick={() => setIsOpen(false)}
+            className="block px-3 py-2 rounded-md text-base font-medium text-luxury-slate dark:text-luxury-ivory hover:bg-luxury-brass/10"
+          >
+            Contact
           </Link>
           <Link
             to="/enquire"
             onClick={() => setIsOpen(false)}
             className="block px-3 py-2 rounded-md text-base font-medium text-luxury-slate dark:text-luxury-ivory hover:bg-luxury-brass/10"
           >
-            Request Consultation
+            Get Quote
           </Link>
 
           {isAuthenticated ? (

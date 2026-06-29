@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight, CheckCircle2, Star, Award, Compass, Layers, Milestone } from 'lucide-react';
+import { Sparkles, ArrowRight, CheckCircle2, Star, Award, Compass, Layers, Milestone, Phone, Mail, MapPin, Clock } from 'lucide-react';
 
 const LandingPage = () => {
   const portfolioItems = [
@@ -60,7 +60,8 @@ const LandingPage = () => {
   return (
     <div className="bg-luxury-cream dark:bg-luxury-dark transition-colors duration-300 min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-28">
+      <section id="home" className="relative overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-28">
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-luxury-brass/30 bg-luxury-brass/5 text-luxury-gold text-xs font-semibold uppercase tracking-widest mb-6 animate-pulse">
@@ -121,12 +122,58 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Portfolio Grid */}
-      <section className="py-20">
+      {/* Services Section */}
+      <section id="services" className="py-20 border-t border-luxury-brass/10 bg-luxury-ivory/10 dark:bg-luxury-charcoal/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold font-serif text-luxury-slate dark:text-luxury-ivory mb-4">
-              Featured Hospitality Spaces
+              Our Elite Services
+            </h2>
+            <div className="h-1 w-20 bg-luxury-gold mx-auto mb-4"></div>
+            <p className="text-luxury-slate/60 dark:text-luxury-ivory/60">
+              Turnkey interior architecture tailored specifically for high-end hospitality brands.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/10 hover:border-luxury-brass/35 p-6 rounded-xl transition-all duration-300 hover:scale-[1.01]">
+              <Layers className="w-10 h-10 text-luxury-gold mb-4" />
+              <h3 className="text-lg font-serif font-bold text-luxury-slate dark:text-luxury-ivory mb-2">Fine Dining</h3>
+              <p className="text-xs text-luxury-slate/60 dark:text-luxury-ivory/60 leading-relaxed">
+                Bespoke furniture layout, acoustic treatments, luxury accents, and mood lighting designed for premium culinary journeys.
+              </p>
+            </div>
+            <div className="bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/10 hover:border-luxury-brass/35 p-6 rounded-xl transition-all duration-300 hover:scale-[1.01]">
+              <Award className="w-10 h-10 text-luxury-gold mb-4" />
+              <h3 className="text-lg font-serif font-bold text-luxury-slate dark:text-luxury-ivory mb-2">Luxury Hotels</h3>
+              <p className="text-xs text-luxury-slate/60 dark:text-luxury-ivory/60 leading-relaxed">
+                Grand reception lobbies, corridors, executive suites, and lounge spaces optimized for visual grandeur and guest comfort.
+              </p>
+            </div>
+            <div className="bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/10 hover:border-luxury-brass/35 p-6 rounded-xl transition-all duration-300 hover:scale-[1.01]">
+              <Compass className="w-10 h-10 text-luxury-gold mb-4" />
+              <h3 className="text-lg font-serif font-bold text-luxury-slate dark:text-luxury-ivory mb-2">Boutique Cafes</h3>
+              <p className="text-xs text-luxury-slate/60 dark:text-luxury-ivory/60 leading-relaxed">
+                Optimized counter ergonomics, aesthetic seating corners, distress/modern themes designed to maximize customer dwell-time.
+              </p>
+            </div>
+            <div className="bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/10 hover:border-luxury-brass/35 p-6 rounded-xl transition-all duration-300 hover:scale-[1.01]">
+              <Milestone className="w-10 h-10 text-luxury-gold mb-4" />
+              <h3 className="text-lg font-serif font-bold text-luxury-slate dark:text-luxury-ivory mb-2">MEP & Acoustics</h3>
+              <p className="text-xs text-luxury-slate/60 dark:text-luxury-ivory/60 leading-relaxed">
+                Integrated HVAC ventilation, acoustic isolation, safety systems, plumbing, and structural engineering compliance.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Portfolio Grid */}
+      <section id="portfolio" className="py-20 border-t border-luxury-brass/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold font-serif text-luxury-slate dark:text-luxury-ivory mb-4">
+              Featured Spaces Showcase
             </h2>
             <div className="h-1 w-20 bg-luxury-gold mx-auto mb-4"></div>
             <p className="text-luxury-slate/60 dark:text-luxury-ivory/60">
@@ -168,33 +215,181 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Design Workflow Steps */}
-      <section className="py-20 bg-luxury-ivory/20 dark:bg-luxury-charcoal/20 border-t border-luxury-brass/10">
+      {/* About Us Section */}
+      <section id="about" className="py-20 bg-luxury-ivory/20 dark:bg-luxury-charcoal/20 border-t border-luxury-brass/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-16">
+            <div className="lg:col-span-5">
+              <span className="text-xs font-semibold uppercase tracking-widest text-luxury-brass">Our Story</span>
+              <h2 className="text-3xl sm:text-4xl font-bold font-serif text-luxury-slate dark:text-luxury-ivory mt-2 mb-6">
+                About Glory Simon Interiors
+              </h2>
+              <div className="h-1 w-20 bg-luxury-gold mb-6"></div>
+              <p className="text-sm text-luxury-slate/70 dark:text-luxury-ivory/70 leading-relaxed mb-4">
+                Established with a vision to redefine commercial hospitality spaces, Glory Simon Interiors blends architectural aesthetics with robust operations. Our team includes premium lighting designers, acoustic engineers, and commercial kitchen specialists.
+              </p>
+              <p className="text-sm text-luxury-slate/70 dark:text-luxury-ivory/70 leading-relaxed">
+                We believe that premium design is not just about visual appeal; it is a critical driver for restaurant seating turnover, room bookings, and operational efficiency. That is why we provide full turnkey fit-outs, guaranteed timelines, and complete cost transparency.
+              </p>
+            </div>
+            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/10 p-6 rounded-xl">
+                <span className="text-2xl font-bold text-luxury-brass">12+ Years</span>
+                <h4 className="text-sm font-semibold text-luxury-slate dark:text-luxury-ivory mt-1">Design Experience</h4>
+                <p className="text-xs text-luxury-slate/50 dark:text-luxury-ivory/50 mt-2">Delivering luxury projects across major commercial hubs.</p>
+              </div>
+              <div className="bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/10 p-6 rounded-xl">
+                <span className="text-2xl font-bold text-luxury-brass">150+ Projects</span>
+                <h4 className="text-sm font-semibold text-luxury-slate dark:text-luxury-ivory mt-1">Turnkey handovers</h4>
+                <p className="text-xs text-luxury-slate/50 dark:text-luxury-ivory/50 mt-2">Award-winning hotels, fine dining eateries, and rooftop lounges.</p>
+              </div>
+              <div className="bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/10 p-6 rounded-xl">
+                <span className="text-2xl font-bold text-luxury-brass">100% In-house</span>
+                <h4 className="text-sm font-semibold text-luxury-slate dark:text-luxury-ivory mt-1">Fabrication Studio</h4>
+                <p className="text-xs text-luxury-slate/50 dark:text-luxury-ivory/50 mt-2">Bespoke wooden furniture and metal joinery built under expert care.</p>
+              </div>
+              <div className="bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/10 p-6 rounded-xl">
+                <span className="text-2xl font-bold text-luxury-brass">Zero Sub-letting</span>
+                <h4 className="text-sm font-semibold text-luxury-slate dark:text-luxury-ivory mt-1">Direct Engineering</h4>
+                <p className="text-xs text-luxury-slate/50 dark:text-luxury-ivory/50 mt-2">Every MEP and HVAC blueprint signed by our own specialists.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-luxury-brass/10 pt-16">
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <h3 className="text-2xl font-bold font-serif text-luxury-slate dark:text-luxury-ivory">Our Structured Journey</h3>
+              <p className="text-xs text-luxury-slate/50 dark:text-luxury-ivory/50 mt-2">A highly transparent, step-by-step project cycle</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {workflowSteps.map((w, index) => (
+                <div key={index} className="relative p-6 bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/10 rounded-xl">
+                  <span className="text-5xl font-extrabold font-serif bg-gradient-to-b from-luxury-brass/25 to-luxury-gold/5 bg-clip-text text-transparent absolute top-4 right-4">
+                    {w.step}
+                  </span>
+                  <h3 className="text-lg font-bold font-serif text-luxury-slate dark:text-luxury-ivory mb-3 mt-4 relative z-10">
+                    {w.title}
+                  </h3>
+                  <p className="text-sm text-luxury-slate/60 dark:text-luxury-ivory/60 leading-relaxed relative z-10">
+                    {w.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 border-t border-luxury-brass/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold font-serif text-luxury-slate dark:text-luxury-ivory mb-4">
-              Our Design Journey
+              Get in Touch
             </h2>
             <div className="h-1 w-20 bg-luxury-gold mx-auto mb-4"></div>
             <p className="text-luxury-slate/60 dark:text-luxury-ivory/60">
-              A highly structured, transparent project management workflow from initial enquiry to final walkthrough.
+              Visit our luxury experience design studio or request a callback.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {workflowSteps.map((w, index) => (
-              <div key={index} className="relative p-6 bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/10 rounded-xl">
-                <span className="text-5xl font-extrabold font-serif bg-gradient-to-b from-luxury-brass/30 to-luxury-gold/5 bg-clip-text text-transparent absolute top-4 right-4">
-                  {w.step}
-                </span>
-                <h3 className="text-lg font-bold font-serif text-luxury-slate dark:text-luxury-ivory mb-3 mt-4 relative z-10">
-                  {w.title}
-                </h3>
-                <p className="text-sm text-luxury-slate/60 dark:text-luxury-ivory/60 leading-relaxed relative z-10">
-                  {w.desc}
-                </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
+            {/* Left Side: Cards */}
+            <div className="lg:col-span-5 flex flex-col gap-6">
+              <div className="bg-luxury-ivory dark:bg-luxury-charcoal border border-luxury-brass/15 p-6 rounded-xl flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-luxury-brass/10 text-luxury-gold">
+                  <MapPin className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-serif font-bold text-luxury-slate dark:text-luxury-ivory">Our Studio Location</h4>
+                  <p className="text-xs text-luxury-slate/60 dark:text-luxury-ivory/60 mt-1 leading-relaxed">
+                    102, Elite Arcade, Road No. 4, Banjara Hills,<br />
+                    Hyderabad, TS, India - 500034
+                  </p>
+                </div>
               </div>
-            ))}
+
+              <div className="bg-luxury-ivory dark:bg-luxury-charcoal border border-luxury-brass/15 p-6 rounded-xl flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-luxury-brass/10 text-luxury-gold">
+                  <Phone className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-serif font-bold text-luxury-slate dark:text-luxury-ivory">Call Or Whatsapp</h4>
+                  <p className="text-xs text-luxury-slate/60 dark:text-luxury-ivory/60 mt-1">
+                    +91 93412 87654<br />
+                    +91 40 4567 8910
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-luxury-ivory dark:bg-luxury-charcoal border border-luxury-brass/15 p-6 rounded-xl flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-luxury-brass/10 text-luxury-gold">
+                  <Mail className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-serif font-bold text-luxury-slate dark:text-luxury-ivory">Mail Box</h4>
+                  <p className="text-xs text-luxury-slate/60 dark:text-luxury-ivory/60 mt-1">
+                    enquiry@glorysimon.com<br />
+                    design@glorysimon.com
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-luxury-ivory dark:bg-luxury-charcoal border border-luxury-brass/15 p-6 rounded-xl flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-luxury-brass/10 text-luxury-gold">
+                  <Clock className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-serif font-bold text-luxury-slate dark:text-luxury-ivory">Studio Hours</h4>
+                  <p className="text-xs text-luxury-slate/60 dark:text-luxury-ivory/60 mt-1">
+                    Monday - Saturday: 10:00 AM - 07:00 PM<br />
+                    Sunday: By Prior Appointment Only
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side: Message Form */}
+            <div className="lg:col-span-7 bg-luxury-ivory dark:bg-luxury-charcoal border border-luxury-brass/15 p-8 rounded-2xl flex flex-col justify-between">
+              <div>
+                <h3 className="text-xl font-serif font-bold text-luxury-slate dark:text-luxury-ivory mb-2">Send a Message</h3>
+                <p className="text-xs text-luxury-slate/60 dark:text-luxury-ivory/60 mb-6">Have a general question? Fill out this quick message box and our team will reply in 12 hours.</p>
+                <form onSubmit={(e) => { e.preventDefault(); alert("Thank you! Your message has been received."); e.target.reset(); }} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      required
+                      placeholder="Your Name"
+                      className="w-full px-4 py-3 bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/25 rounded-lg text-sm text-luxury-slate dark:text-luxury-ivory focus:outline-none focus:border-luxury-gold"
+                    />
+                    <input
+                      type="email"
+                      required
+                      placeholder="Email Address"
+                      className="w-full px-4 py-3 bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/25 rounded-lg text-sm text-luxury-slate dark:text-luxury-ivory focus:outline-none focus:border-luxury-gold"
+                    />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Project Subject (e.g. Fine dining lounge design)"
+                    className="w-full px-4 py-3 bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/25 rounded-lg text-sm text-luxury-slate dark:text-luxury-ivory focus:outline-none focus:border-luxury-gold"
+                  />
+                  <textarea
+                    rows="4"
+                    required
+                    placeholder="Write your brief details here..."
+                    className="w-full px-4 py-3 bg-luxury-cream dark:bg-luxury-dark border border-luxury-brass/25 rounded-lg text-sm text-luxury-slate dark:text-luxury-ivory focus:outline-none focus:border-luxury-gold"
+                  ></textarea>
+                  <button
+                    type="submit"
+                    className="w-full py-4 bg-gradient-to-r from-luxury-brass to-luxury-gold text-luxury-dark font-bold rounded-lg hover:shadow-md hover:scale-[1.01] transition-all duration-300"
+                  >
+                    Submit Message
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -225,12 +420,20 @@ const LandingPage = () => {
           <p className="text-luxury-ivory/70 max-w-xl mx-auto mb-8 font-light">
             Consult with our award-winning designers today. Receive detailed cost estimations and tailored layouts.
           </p>
-          <Link
-            to="/enquire"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-luxury-brass to-luxury-gold text-luxury-dark font-bold rounded-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
-          >
-            Enquire Now <ArrowRight className="w-5 h-5" />
-          </Link>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link
+              to="/enquire"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-luxury-brass to-luxury-gold text-luxury-dark font-bold rounded-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+            >
+              Get Free Quote <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              to="/enquire"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-luxury-brass/45 text-luxury-ivory font-semibold rounded-lg hover:bg-luxury-brass/10 transition-all duration-300"
+            >
+              Book Site Visit
+            </Link>
+          </div>
         </div>
       </section>
     </div>
@@ -238,3 +441,4 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+

@@ -1,14 +1,19 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, BarChart2, PlusCircle } from 'lucide-react';
+import { LayoutDashboard, BarChart2, PlusCircle, FolderKanban, Package, Users, FileText, Sparkles } from 'lucide-react';
 
 const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'Projects', path: '/projects', icon: FolderKanban },
+    { name: 'Materials', path: '/materials', icon: Package },
+    { name: 'Vendors', path: '/vendors', icon: Users },
     { name: 'Analytics', path: '/analytics', icon: BarChart2 },
-    { name: 'Add Lead (Form)', path: '/enquire', icon: PlusCircle }
+    { name: 'Reports', path: '/reports', icon: FileText },
+    { name: 'AI Assistant', path: '/ai-assistant', icon: Sparkles },
+    { name: 'Add Lead', path: '/enquire', icon: PlusCircle }
   ];
 
   const isActive = (path) => location.pathname === path;

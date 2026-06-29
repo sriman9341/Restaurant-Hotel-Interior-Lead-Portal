@@ -10,7 +10,7 @@ const setLocalCollection = (collectionName, data) => {
 
 // Seed default data if empty (e.g. some mock leads so dashboard has beautiful stats)
 const seedInitialData = () => {
-  if (!localStorage.getItem('mock_db_seeded')) {
+  if (!localStorage.getItem('mock_db_seeded_v2')) {
     const mockLeads = [
       {
         id: 'lead-1',
@@ -115,12 +115,74 @@ const seedInitialData = () => {
       }
     ];
 
+    const mockProjects = [
+      {
+        id: 'proj-1',
+        name: 'Grand Bites Restaurant Fit-Out',
+        client: 'Sriman Murthy',
+        type: 'Restaurant',
+        progress: 65,
+        designer: 'Sophia Loren',
+        milestones: [
+          { name: 'Concept Drawings', status: 'Completed' },
+          { name: 'MEP Approval', status: 'Completed' },
+          { name: 'Flooring & Painting', status: 'Completed' },
+          { name: 'Custom Woodwork', status: 'In Progress' },
+          { name: 'Kitchen Equipments', status: 'Pending' },
+          { name: 'Handover', status: 'Pending' }
+        ],
+        budget: '35 Lakhs',
+        startDate: '2026-05-10',
+        endDate: '2026-08-15',
+        status: 'Active'
+      },
+      {
+        id: 'proj-2',
+        name: 'Skyline Hotel Suite Redesign',
+        client: 'Kabir Kapoor',
+        type: 'Hotel',
+        progress: 25,
+        designer: 'Michael Chang',
+        milestones: [
+          { name: 'Concept Drawings', status: 'Completed' },
+          { name: 'Civil Dismantling', status: 'Completed' },
+          { name: 'Plumbing & Wiring', status: 'In Progress' },
+          { name: 'Drywall Partition', status: 'Pending' },
+          { name: 'Fit-out & Furnishing', status: 'Pending' }
+        ],
+        budget: '56 Lakhs',
+        startDate: '2026-06-01',
+        endDate: '2026-10-30',
+        status: 'Active'
+      }
+    ];
+
+    const mockMaterials = [
+      { id: 'mat-1', name: 'Calacatta Gold Marble', category: 'Flooring / Stone', rate: '750 per sq.ft', grade: 'Premium A', stock: '2200 sq.ft', supplier: 'Italian Stone Emporium' },
+      { id: 'mat-2', name: 'Brushed PVD Brass Sheet', category: 'Metal Work', rate: '450 per sq.ft', grade: 'Commercial Grade', stock: '850 sq.ft', supplier: 'Metals & Alloys Ind' },
+      { id: 'mat-3', name: 'Burma Teak Wood Planks', category: 'Timber / Joinery', rate: '2800 per cu.ft', grade: 'AAA Quality', stock: '400 cu.ft', supplier: 'Burmese Wood Import' },
+      { id: 'mat-4', name: 'Acoustic Wall Panels (Pet)', category: 'Panels / Acoustic', rate: '120 per sq.ft', grade: 'Standard NRC 0.85', stock: '1500 sq.ft', supplier: 'Sound Shield Acoustics' },
+      { id: 'mat-5', name: 'Bespoke Velvet Fabric (Royal Blue)', category: 'Upholstery', rate: '350 per meter', grade: 'High Rub Count (50k)', stock: '320 meters', supplier: 'Royal Weaves' }
+    ];
+
+    const mockVendors = [
+      { id: 'vend-1', name: 'Apex Civil Contractors', trade: 'Masonry & Dismantling', contact: 'Ramesh Kumar (+91 98450 11223)', rating: 4.8, activeProjects: 2, status: 'Available' },
+      { id: 'vend-2', name: 'Elegant Carpentry Labs', trade: 'Millwork & Furniture', contact: "Joseph D'Souza (+91 91102 33445)", rating: 4.9, activeProjects: 3, status: 'Busy' },
+      { id: 'vend-3', name: 'Spark MEP Solutions', trade: 'Electrical & Plumbing', contact: 'Arun Verma (+91 88990 44556)', rating: 4.6, activeProjects: 1, status: 'Available' },
+      { id: 'mat-4', name: 'AcoustiSilence Systems', trade: 'Acoustics & Sound-isolation', contact: 'Dr. Srinivas Rao (+91 94440 55667)', rating: 4.7, activeProjects: 1, status: 'Available' },
+      { id: 'vend-5', name: 'Glass & Glazing Craft', trade: 'Tempered Glass & Facades', contact: 'Mohsin Khan (+91 77660 88990)', rating: 4.5, activeProjects: 0, status: 'Available' }
+    ];
+
     setLocalCollection('leads', mockLeads);
     setLocalCollection('users', mockUsers);
     setLocalCollection('quotations', mockQuotations);
-    localStorage.setItem('mock_db_seeded', 'true');
+    setLocalCollection('projects', mockProjects);
+    setLocalCollection('materials', mockMaterials);
+    setLocalCollection('vendors', mockVendors);
+    localStorage.setItem('mock_db_seeded_v2', 'true');
   }
 };
+
 
 // Seed immediately
 seedInitialData();
