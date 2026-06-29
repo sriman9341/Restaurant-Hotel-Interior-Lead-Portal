@@ -1,10 +1,14 @@
 import axios from 'axios';
+import { resolveApiBaseUrl } from './baseUrl';
+
+const configuredBaseUrl = (import.meta.env.VITE_API_URL || '').trim();
+const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+const baseUrl = resolveApiBaseUrl(configuredBaseUrl, currentOrigin);
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://glory-simon-api-9341.loca.lt',
+  baseURL: baseUrl || '',
   headers: {
-    'Content-Type': 'application/json',
-    'bypass-tunnel-reminder': 'true'
+    'Content-Type': 'application/json'
   }
 });
 
@@ -13,6 +17,7 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
+      config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;

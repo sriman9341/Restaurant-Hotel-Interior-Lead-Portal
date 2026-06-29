@@ -93,6 +93,12 @@ dist
 
 # Serverless directories
 .serverless/
+**/.vercel/
+
+# Deployment inspection artifacts
+frontend/inspect.json
+frontend/logs.json
+frontend/response.html
 
 # FuseBox cache
 .fusebox/
