@@ -5,32 +5,29 @@ import { getStorage } from 'firebase/storage';
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 export const missingFirebaseEnvVars = Object.entries(firebaseConfig)
   .filter(([, value]) => !value || value.includes('placeholder') || value.includes('your_'))
   .map(([key]) => key);
 
-const hasMissingVars = missingFirebaseEnvVars.length > 0;
-export const isMockFirebase = hasMissingVars;
-
-// Always return true so application features are unlocked locally
-export const isFirebaseConfigured = true;
+export const isFirebaseConfigured = missingFirebaseEnvVars.length === 0;
+export const isMockFirebase = !isFirebaseConfigured;
 
 if (isMockFirebase) {
-  console.log(
-    '%c[Mock Firebase] Running in Local Storage mock mode (Firebase credentials not fully configured).',
+  console.warn(
+    '%c[Mock Firebase] Firebase credentials not fully configured. Using mock providers or limited functionality.',
     'color: #bfa15f; font-weight: bold; font-size: 11px;'
   );
+  console.warn('Missing Firebase env vars:', missingFirebaseEnvVars.join(', '));
 } else {
-  console.log(
-    '%c[Firebase] Running in Production mode with real Firebase credentials.',
-    'color: #10B981; font-weight: bold; font-size: 11px;'
-  );
+  console.info('%c[Firebase] Using project:', 'color: #10B981; font-weight: bold; font-size: 11px;', firebaseConfig.projectId);
 }
 
 // Initialize Firebase

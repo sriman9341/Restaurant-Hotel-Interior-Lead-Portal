@@ -12,5 +12,7 @@
     "start": "npm run dev:frontend",
     "build": "npm run build:frontend"
   },
-  "devDependencies": {}
+  "dependencies": {
+    "firebase": "^12.15.0"
+  }
 }

@@ -20,8 +20,11 @@ const LoginPage = () => {
       return;
     }
 
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
     setLoading(true);
-    const result = await login(email, password);
+    const result = await login(trimmedEmail, trimmedPassword);
     setLoading(false);
 
     if (result.success) {

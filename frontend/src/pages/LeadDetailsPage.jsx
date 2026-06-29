@@ -45,8 +45,10 @@ const LeadDetailsPage = () => {
         setLead(null);
       }
     } catch (err) {
-      console.error(err);
-      setToast({ type: 'error', message: 'Failed to fetch lead specifications' });
+      console.error('Failed to fetch lead specifications — full error:', err);
+      const msg = err?.message || 'Unknown error';
+      const code = err?.code ? ` (${err.code})` : '';
+      setToast({ type: 'error', message: `Failed to fetch lead specifications: ${msg}${code}` });
     } finally {
       setLoading(false);
     }
@@ -64,6 +66,7 @@ const LeadDetailsPage = () => {
         setHasQuotation(false);
       }
     } catch (err) {
+      console.error('Error checking quotations for lead:', err);
       setHasQuotation(false);
     }
   };

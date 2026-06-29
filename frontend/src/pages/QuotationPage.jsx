@@ -48,10 +48,14 @@ const QuotationPage = () => {
             setMiscellaneousCost(String(qData.miscellaneousCost));
           }
         } catch (qErr) {
-          // No quotation yet
+          console.error('Error fetching quotation for lead:', qErr);
+          // It's acceptable for a lead to not have a quotation yet; show no toast.
         }
       } catch (err) {
-        setToast({ type: 'error', message: 'Error loading lead details' });
+        console.error('Error loading lead details — full error:', err);
+        const msg = err?.message || 'Unknown error';
+        const code = err?.code ? ` (${err.code})` : '';
+        setToast({ type: 'error', message: `Error loading lead details: ${msg}${code}` });
       } finally {
         setLoading(false);
       }

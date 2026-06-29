@@ -1,13 +1,14 @@
 // @refresh reset
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import {
   browserLocalPersistence,
   onAuthStateChanged,
   setPersistence,
   signInWithEmailAndPassword,
-  signOut
+  signOut,
+  signInAnonymously
 } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, isFirebaseConfigured } from '../firebase';
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { db } from '../firestore';
 
@@ -16,6 +17,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const attemptedAnon = useRef(false);
 
   useEffect(() => {
     // If mock user session is saved in localStorage, use it to persist login state
@@ -66,6 +68,20 @@ export const AuthProvider = ({ children }) => {
           });
         }
       } else {
+        // If Firebase is configured, attempt anonymous sign-in once so app can access protected resources
+        if (isFirebaseConfigured && !attemptedAnon.current) {
+          attemptedAnon.current = true;
+          try {
+            await setPersistence(auth, browserLocalPersistence);
+            await signInAnonymously(auth);
+            // onAuthStateChanged will fire again with the anonymous user
+            return;
+          } catch (err) {
+            console.warn('Anonymous sign-in failed:', err?.code || err?.message || err);
+            // fall through to clear user and allow fallback flow
+          }
+        }
+
         setUser(null);
       }
       setLoading(false);
@@ -75,17 +91,24 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+    const normalizedEmail = email?.trim();
+    const normalizedPassword = password?.trim();
+
+    if (!normalizedEmail || !normalizedPassword) {
+      return { success: false, error: 'Email and password are required.' };
+    }
+
     // Local fallback check for default credentials to prevent blocking users
-    if (email.toLowerCase() === 'admin@glorysimon.com' && password === 'adminpassword123') {
+    if (normalizedEmail.toLowerCase() === 'admin@glorysimon.com' && normalizedPassword === 'adminpassword123') {
       try {
         await setPersistence(auth, browserLocalPersistence);
-        await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, normalizedEmail, normalizedPassword);
         return { success: true };
       } catch (err) {
         console.warn('Real Firebase Authentication failed. Falling back to local admin session:', err.message);
         const mockUser = {
           uid: 'mock-admin-uid-123',
-          email: email,
+          email: normalizedEmail,
           name: 'Glory Simon Admin',
           role: 'Admin'
         };
@@ -97,7 +120,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       await setPersistence(auth, browserLocalPersistence);
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, normalizedEmail, normalizedPassword);
       return { success: true };
     } catch (error) {
       console.error('Firebase login error:', error);

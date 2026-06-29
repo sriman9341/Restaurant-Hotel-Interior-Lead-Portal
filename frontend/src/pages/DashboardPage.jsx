@@ -66,8 +66,10 @@ const DashboardPage = () => {
 
       setAllLeads(loadedLeads);
     } catch (err) {
-      console.error('Error fetching dashboard data:', err.message);
-      setToast({ type: 'error', message: 'Failed to retrieve data from Firebase.' });
+        console.error('Error fetching dashboard data — full error:', err);
+        const msg = err?.message || 'Unknown error';
+        const code = err?.code ? ` (${err.code})` : '';
+        setToast({ type: 'error', message: `Failed to retrieve data from Firebase: ${msg}${code}` });
     } finally {
       setStatsLoading(false);
       setLoading(false);

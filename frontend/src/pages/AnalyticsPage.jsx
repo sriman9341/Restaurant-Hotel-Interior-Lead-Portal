@@ -75,8 +75,10 @@ const AnalyticsPage = () => {
         });
         
       } catch (err) {
-        console.error(err);
-        setToast({ type: 'error', message: 'Failed to fetch analytics charts' });
+          console.error('Failed to fetch analytics charts — full error:', err);
+          const msg = err?.message || 'Unknown error';
+          const code = err?.code ? ` (${err.code})` : '';
+          setToast({ type: 'error', message: `Failed to fetch analytics charts: ${msg}${code}` });
       } finally {
         setLoading(false);
       }
