@@ -41,10 +41,20 @@ const LoginPage = () => {
           <h2 className="text-3xl font-bold font-serif text-luxury-slate dark:text-luxury-ivory tracking-tight">
             Admin Authentication
           </h2>
-          <p className="mt-2 text-sm text-luxury-slate/60 dark:text-luxury-ivory/60 font-light">
+          <p className="mt-2 text-sm text-luxury-slate/60 dark:text-luxury-ivory/60 font-light mb-4">
             Authorized management panel access
           </p>
         </div>
+
+        {/* Demo Credentials Box */}
+        <div className="bg-luxury-brass/5 border border-luxury-brass/20 rounded-xl p-4 text-xs text-luxury-slate/85 dark:text-luxury-ivory/85 leading-relaxed">
+          <p className="font-semibold text-luxury-gold uppercase tracking-wider mb-2">Demo Access Credentials</p>
+          <ul className="space-y-1 font-light">
+            <li>• <strong>Email:</strong> <code className="bg-luxury-cream dark:bg-luxury-dark px-1.5 py-0.5 rounded border border-luxury-brass/10 select-all">admin@glorysimon.com</code></li>
+            <li>• <strong>Password:</strong> <code className="bg-luxury-cream dark:bg-luxury-dark px-1.5 py-0.5 rounded border border-luxury-brass/10">Any password</code></li>
+          </ul>
+        </div>
+
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
