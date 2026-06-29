@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
   const useMock = missingFirebaseEnvVars.length > 0
 
   return {
-    base: '/',
+    base: './',
     plugins: [react()],
     resolve: {
       alias: useMock ? {
