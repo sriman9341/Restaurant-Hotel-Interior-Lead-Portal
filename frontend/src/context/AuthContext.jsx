@@ -1,5 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../api/axios';
+import {
+  browserLocalPersistence,
+  onAuthStateChanged,
+  setPersistence,
+  signInWithEmailAndPassword,
+  signOut
+} from 'firebase/auth';
+import { auth } from '../firebase';
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { db } from '../firestore';
 
 const AuthContext = createContext();
 
@@ -8,50 +17,90 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkUserLoggedIn = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
         try {
-          const res = await api.get('/api/auth/me');
-          if (res.data && res.data.success) {
-            setUser(res.data.data);
+          const userRef = doc(db, 'users', currentUser.uid);
+          const userSnap = await getDoc(userRef);
+
+          if (userSnap.exists()) {
+            const data = userSnap.data();
+            setUser({
+              uid: currentUser.uid,
+              email: currentUser.email,
+              name: data.name || currentUser.displayName || 'Admin',
+              role: data.role || 'Admin'
+            });
           } else {
-            localStorage.removeItem('token');
+            const newUser = {
+              uid: currentUser.uid,
+              email: currentUser.email,
+              name: currentUser.displayName || 'Admin',
+              role: 'Admin',
+              createdAt: serverTimestamp()
+            };
+            await setDoc(userRef, newUser);
+            setUser({
+              uid: currentUser.uid,
+              email: currentUser.email,
+              name: newUser.name,
+              role: newUser.role
+            });
           }
-        } catch (error) {
-          console.error('Session validation failed:', error.message);
-          localStorage.removeItem('token');
+        } catch (err) {
+          console.error('Error loading user profile:', err);
+          setUser({
+            uid: currentUser.uid,
+            email: currentUser.email,
+            name: currentUser.displayName || 'Admin',
+            role: 'Admin'
+          });
         }
+      } else {
+        setUser(null);
       }
       setLoading(false);
-    };
+    });
 
-    checkUserLoggedIn();
+    return () => unsubscribe();
   }, []);
 
   const login = async (email, password) => {
     try {
-      const res = await api.post('/api/auth/login', { email, password });
-      if (res.data && res.data.success) {
-        const userData = res.data.data;
-        localStorage.setItem('token', userData.token);
-        setUser(userData);
-        return { success: true };
-      }
-      return { success: false, error: 'Login failed' };
+      await setPersistence(auth, browserLocalPersistence);
+      await signInWithEmailAndPassword(auth, email, password);
+      return { success: true };
     } catch (error) {
-      const errorMsg = error.response?.data?.error || 'Server error, please try again';
+      console.error('Firebase login error:', error);
+      let errorMsg = 'Login failed. Please check your credentials.';
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        errorMsg = 'Invalid email or password.';
+      } else if (error.code === 'auth/invalid-credential') {
+        errorMsg = 'Invalid credentials.';
+      }
       return { success: false, error: errorMsg };
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+        isAuthenticated: !!user,
+        isAdmin: user?.role === 'Admin'
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

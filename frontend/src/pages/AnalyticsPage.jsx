@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import api from '../api/axios';
 import Sidebar from '../components/Sidebar';
 import Toast from '../components/Toast';
 import {
@@ -17,6 +16,8 @@ import {
   Area,
   Legend
 } from 'recharts';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firestore';
 
 const AnalyticsPage = () => {
   const [data, setData] = useState(null);
@@ -27,11 +28,54 @@ const AnalyticsPage = () => {
     const fetchAnalytics = async () => {
       setLoading(true);
       try {
-        const res = await api.get('/api/dashboard/analytics');
-        if (res.data && res.data.success) {
-          setData(res.data.data);
-        }
+        
+        const leadsSnapshot = await getDocs(collection(db, 'leads'));
+        
+        const projectTypeCounts = {};
+        const statusCounts = {};
+        const budgetCounts = {};
+        const monthCounts = {};
+        
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        leadsSnapshot.forEach(doc => {
+          const lead = doc.data();
+          
+          if (lead.projectType) {
+            projectTypeCounts[lead.projectType] = (projectTypeCounts[lead.projectType] || 0) + 1;
+          }
+          if (lead.status) {
+            statusCounts[lead.status] = (statusCounts[lead.status] || 0) + 1;
+          }
+          if (lead.budget) {
+            budgetCounts[lead.budget] = (budgetCounts[lead.budget] || 0) + 1;
+          }
+          if (lead.createdAt) {
+            const date = lead.createdAt?.toDate ? lead.createdAt.toDate() : new Date(lead.createdAt);
+            const monthStr = monthNames[date.getMonth()];
+            monthCounts[monthStr] = (monthCounts[monthStr] || 0) + 1;
+          }
+        });
+
+        const projectTypes = Object.entries(projectTypeCounts).map(([name, value]) => ({ name, value }));
+        const statuses = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
+        const budgets = Object.entries(budgetCounts).map(([name, value]) => ({ name, value }));
+        
+        // Map months in order
+        const monthlyGrowth = monthNames.filter(m => monthCounts[m] !== undefined).map(name => ({
+          name,
+          Leads: monthCounts[name]
+        }));
+        
+        setData({
+          projectTypes,
+          monthlyGrowth,
+          statuses,
+          budgets
+        });
+        
       } catch (err) {
+        console.error(err);
         setToast({ type: 'error', message: 'Failed to fetch analytics charts' });
       } finally {
         setLoading(false);

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import api from '../api/axios';
 import Sidebar from '../components/Sidebar';
 import Toast from '../components/Toast';
 import { ChevronLeft, FilePlus, Send } from 'lucide-react';
+import { doc, getDoc, collection, query, where, getDocs, updateDoc, serverTimestamp, arrayUnion } from 'firebase/firestore';
+import { db } from '../firestore';
 
 const LeadDetailsPage = () => {
   const { id } = useParams();
@@ -28,11 +29,23 @@ const LeadDetailsPage = () => {
   const fetchLeadDetails = async () => {
     setLoading(true);
     try {
-      const res = await api.get(`/api/leads/${id}`);
-      if (res.data && res.data.success) {
-        setLead(res.data.data);
+      
+      const docRef = doc(db, 'leads', id);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setLead({
+          _id: docSnap.id,
+          ...data,
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt,
+          updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate().toISOString() : data.updatedAt,
+        });
+      } else {
+        setLead(null);
       }
     } catch (err) {
+      console.error(err);
       setToast({ type: 'error', message: 'Failed to fetch lead specifications' });
     } finally {
       setLoading(false);
@@ -41,9 +54,14 @@ const LeadDetailsPage = () => {
 
   const checkQuotation = async () => {
     try {
-      const res = await api.get(`/api/quotations/lead/${id}`);
-      if (res.data && res.data.success) {
+      
+      const q = query(collection(db, 'quotations'), where('leadId', '==', id));
+      const querySnapshot = await getDocs(q);
+      
+      if (!querySnapshot.empty) {
         setHasQuotation(true);
+      } else {
+        setHasQuotation(false);
       }
     } catch (err) {
       setHasQuotation(false);
@@ -57,11 +75,12 @@ const LeadDetailsPage = () => {
 
   const handleUpdateStatus = async (status) => {
     try {
-      const res = await api.patch(`/api/leads/${id}/status`, { status });
-      if (res.data && res.data.success) {
-        setLead((prev) => ({ ...prev, status: res.data.data.status }));
-        setToast({ type: 'success', message: `Status updated to: ${status}` });
-      }
+      
+      const docRef = doc(db, 'leads', id);
+      await updateDoc(docRef, { status, updatedAt: serverTimestamp() });
+      
+      setLead((prev) => ({ ...prev, status }));
+      setToast({ type: 'success', message: `Status updated to: ${status}` });
     } catch (err) {
       setToast({ type: 'error', message: 'Failed to update workflow status' });
     }
@@ -69,11 +88,12 @@ const LeadDetailsPage = () => {
 
   const handleUpdateOwner = async (owner) => {
     try {
-      const res = await api.put(`/api/leads/${id}`, { owner });
-      if (res.data && res.data.success) {
-        setLead((prev) => ({ ...prev, owner: res.data.data.owner }));
-        setToast({ type: 'success', message: `Assigned owner to: ${owner}` });
-      }
+      
+      const docRef = doc(db, 'leads', id);
+      await updateDoc(docRef, { owner, updatedAt: serverTimestamp() });
+      
+      setLead((prev) => ({ ...prev, owner }));
+      setToast({ type: 'success', message: `Assigned owner to: ${owner}` });
     } catch (err) {
       setToast({ type: 'error', message: 'Failed to assign owner' });
     }
@@ -85,13 +105,22 @@ const LeadDetailsPage = () => {
 
     setNoteSubmitLoading(true);
     try {
-      const res = await api.post(`/api/leads/${id}/notes`, { text: newNote });
-      if (res.data && res.data.success) {
-        setLead((prev) => ({ ...prev, internalNotes: res.data.data.internalNotes }));
-        setNewNote('');
-        setToast({ type: 'success', message: 'Note added successfully' });
-      }
+      const newNoteObj = {
+        text: newNote,
+        date: new Date().toISOString(),
+        author: 'Admin'
+      };
+      
+      const docRef = doc(db, 'leads', id);
+      await updateDoc(docRef, {
+        internalNotes: arrayUnion(newNoteObj)
+      });
+      
+      setLead((prev) => ({ ...prev, internalNotes: [...(prev.internalNotes || []), newNoteObj] }));
+      setNewNote('');
+      setToast({ type: 'success', message: 'Note added successfully' });
     } catch (err) {
+      console.error(err);
       setToast({ type: 'error', message: 'Failed to save internal note' });
     } finally {
       setNoteSubmitLoading(false);

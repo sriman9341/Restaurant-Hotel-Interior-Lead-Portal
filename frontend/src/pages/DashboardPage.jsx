@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api/axios';
 import Sidebar from '../components/Sidebar';
 import StatCard from '../components/StatCard';
 import LeadCard from '../components/LeadCard';
 import Toast from '../components/Toast';
 import { Layers, Search, Filter, RefreshCw, ChevronLeft, ChevronRight, FileSpreadsheet, PlusCircle } from 'lucide-react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firestore';
 
 const DashboardPage = () => {
   const [stats, setStats] = useState(null);
-  const [leads, setLeads] = useState([]);
+  const [allLeads, setAllLeads] = useState([]); // Store all leads for local filtering
+  const [leads, setLeads] = useState([]); // Displayed leads
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
   const [toast, setToast] = useState(null);
@@ -23,53 +25,124 @@ const DashboardPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalLeads, setTotalLeads] = useState(0);
 
-  const fetchStats = async () => {
-    setStatsLoading(true);
-    try {
-      const res = await api.get('/api/dashboard/stats');
-      if (res.data && res.data.success) {
-        setStats(res.data.data);
-      }
-    } catch (err) {
-      console.error('Error fetching dashboard stats:', err.message);
-    } finally {
-      setStatsLoading(false);
-    }
-  };
+  const limit = 8;
 
-  const fetchLeads = async () => {
+  const fetchStatsAndLeadsData = async () => {
+    setStatsLoading(true);
     setLoading(true);
     try {
-      const params = {
-        page,
-        limit: 8,
-        sort,
-        search: search.trim() || undefined,
-        status: statusFilter || undefined,
-        projectType: typeFilter || undefined,
-        budget: budgetFilter || undefined
-      };
+      const leadsSnapshot = await getDocs(collection(db, 'leads'));
+      const quotesSnapshot = await getDocs(collection(db, 'quotations'));
 
-      const res = await api.get('/api/leads', { params });
-      if (res.data && res.data.success) {
-        setLeads(res.data.data);
-        setTotalPages(res.data.totalPages);
-        setTotalLeads(res.data.totalLeads);
-      }
+      let totalQuotationVal = 0;
+      quotesSnapshot.forEach(doc => {
+        totalQuotationVal += doc.data().total || 0;
+      });
+
+      let totalArea = 0;
+      let totalCapacity = 0;
+      const loadedLeads = [];
+
+      leadsSnapshot.forEach(doc => {
+        const data = doc.data();
+        totalArea += Number(data.area) || 0;
+        totalCapacity += Number(data.seatingCapacity) || 0;
+        loadedLeads.push({
+          _id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt,
+          updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate().toISOString() : data.updatedAt,
+        });
+      });
+
+      const totalLeadsCount = loadedLeads.length;
+      
+      setStats({
+        totalLeads: totalLeadsCount,
+        totalQuotationVal,
+        avgArea: totalLeadsCount > 0 ? Math.round(totalArea / totalLeadsCount) : 0,
+        avgCapacity: totalLeadsCount > 0 ? Math.round(totalCapacity / totalLeadsCount) : 0
+      });
+
+      setAllLeads(loadedLeads);
     } catch (err) {
-      setToast({ type: 'error', message: 'Failed to retrieve leads list.' });
+      console.error('Error fetching dashboard data:', err.message);
+      setToast({ type: 'error', message: 'Failed to retrieve data from Firebase.' });
     } finally {
+      setStatsLoading(false);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchStats();
+    fetchStatsAndLeadsData();
   }, []);
 
   useEffect(() => {
-    fetchLeads();
-  }, [search, statusFilter, typeFilter, budgetFilter, sort, page]);
+    if (allLeads.length === 0 && !loading) {
+      setLeads([]);
+      setTotalPages(1);
+      setTotalLeads(0);
+      return;
+    }
+
+    // Filter leads
+    let filtered = allLeads.filter(lead => {
+      let matchesSearch = true;
+      let matchesStatus = true;
+      let matchesType = true;
+      let matchesBudget = true;
+
+      if (search) {
+        const searchTerm = search.toLowerCase();
+        matchesSearch = 
+          (lead.name && lead.name.toLowerCase().includes(searchTerm)) ||
+          (lead.company && lead.company.toLowerCase().includes(searchTerm));
+      }
+
+      if (statusFilter) matchesStatus = lead.status === statusFilter;
+      if (typeFilter) matchesType = lead.projectType === typeFilter;
+      if (budgetFilter) matchesBudget = lead.budget === budgetFilter;
+
+      return matchesSearch && matchesStatus && matchesType && matchesBudget;
+    });
+
+    // Sort leads
+    filtered.sort((a, b) => {
+      let valA, valB;
+      let order = 1;
+      let field = sort;
+
+      if (sort.startsWith('-')) {
+        order = -1;
+        field = sort.substring(1);
+      }
+
+      valA = a[field];
+      valB = b[field];
+
+      if (field === 'createdAt') {
+        valA = new Date(valA || 0).getTime();
+        valB = new Date(valB || 0).getTime();
+      } else if (field === 'area' || field === 'seatingCapacity') {
+        valA = Number(valA) || 0;
+        valB = Number(valB) || 0;
+      }
+
+      if (valA < valB) return -1 * order;
+      if (valA > valB) return 1 * order;
+      return 0;
+    });
+
+    setTotalLeads(filtered.length);
+    setTotalPages(Math.ceil(filtered.length / limit) || 1);
+
+    // Pagination
+    const start = (page - 1) * limit;
+    const end = start + limit;
+    setLeads(filtered.slice(start, end));
+
+  }, [search, statusFilter, typeFilter, budgetFilter, sort, page, allLeads, loading]);
 
   const handleResetFilters = () => {
     setSearch('');

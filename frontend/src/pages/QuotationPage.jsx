@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import api from '../api/axios';
 import Sidebar from '../components/Sidebar';
 import Toast from '../components/Toast';
 import { ChevronLeft, Save, Download, Calculator, Percent } from 'lucide-react';
 import { jsPDF } from 'jspdf';
+import { doc, getDoc, collection, query, where, getDocs, updateDoc, serverTimestamp, addDoc } from 'firebase/firestore';
+import { db } from '../firestore';
 import 'jspdf-autotable';
 
 const QuotationPage = () => {
@@ -25,21 +26,26 @@ const QuotationPage = () => {
     const fetchLeadAndQuotation = async () => {
       setLoading(true);
       try {
-        const leadRes = await api.get(`/api/leads/${id}`);
-        if (leadRes.data && leadRes.data.success) {
-          setLead(leadRes.data.data);
+        
+        const leadDocRef = doc(db, 'leads', id);
+        const leadSnap = await getDoc(leadDocRef);
+        
+        if (leadSnap.exists()) {
+          setLead({ _id: leadSnap.id, ...leadSnap.data() });
         }
 
         try {
-          const quoteRes = await api.get(`/api/quotations/lead/${id}`);
-          if (quoteRes.data && quoteRes.data.success) {
-            const q = quoteRes.data.data;
-            setDesignCost(String(q.designCost));
-            setFurnitureCost(String(q.furnitureCost));
-            setLightingCost(String(q.lightingCost));
-            setFlooringCost(String(q.flooringCost));
-            setCivilWorkCost(String(q.civilWorkCost));
-            setMiscellaneousCost(String(q.miscellaneousCost));
+          const q = query(collection(db, 'quotations'), where('leadId', '==', id));
+          const querySnapshot = await getDocs(q);
+          
+          if (!querySnapshot.empty) {
+            const qData = querySnapshot.docs[0].data();
+            setDesignCost(String(qData.designCost));
+            setFurnitureCost(String(qData.furnitureCost));
+            setLightingCost(String(qData.lightingCost));
+            setFlooringCost(String(qData.flooringCost));
+            setCivilWorkCost(String(qData.civilWorkCost));
+            setMiscellaneousCost(String(qData.miscellaneousCost));
           }
         } catch (qErr) {
           // No quotation yet
@@ -68,6 +74,7 @@ const QuotationPage = () => {
   const handleSaveQuotation = async () => {
     setSaveLoading(true);
     try {
+      
       const payload = {
         leadId: id,
         designCost: dCost,
@@ -75,15 +82,41 @@ const QuotationPage = () => {
         lightingCost: lCost,
         flooringCost: flCost,
         civilWorkCost: cCost,
-        miscellaneousCost: mCost
+        miscellaneousCost: mCost,
+        subtotal,
+        gst,
+        total,
+        createdAt: serverTimestamp()
       };
 
-      const res = await api.post('/api/quotations', payload);
-      if (res.data && res.data.success) {
-        setToast({ type: 'success', message: 'Quotation saved successfully! Lead updated.' });
+      const q = query(collection(db, 'quotations'), where('leadId', '==', id));
+      const querySnapshot = await getDocs(q);
+      
+      if (!querySnapshot.empty) {
+        // Update existing quotation
+        const qDocId = querySnapshot.docs[0].id;
+        await updateDoc(doc(db, 'quotations', qDocId), {
+          ...payload,
+          createdAt: querySnapshot.docs[0].data().createdAt
+        });
+      } else {
+        // Add new quotation
+        await addDoc(collection(db, 'quotations'), payload);
       }
+      
+      // Update Lead status to 'Quotation Sent' if not already
+      if (lead && lead.status !== 'Quotation Sent') {
+        await updateDoc(doc(db, 'leads', id), {
+          status: 'Quotation Sent',
+          updatedAt: serverTimestamp()
+        });
+        setLead(prev => ({ ...prev, status: 'Quotation Sent' }));
+      }
+      
+      setToast({ type: 'success', message: 'Quotation saved successfully! Lead updated.' });
     } catch (err) {
-      setToast({ type: 'error', message: err.response?.data?.error || 'Failed to save quotation.' });
+      console.error(err);
+      setToast({ type: 'error', message: 'Failed to save quotation.' });
     } finally {
       setSaveLoading(false);
     }

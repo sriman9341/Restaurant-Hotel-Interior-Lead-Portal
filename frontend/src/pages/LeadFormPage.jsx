@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api/axios';
 import Toast from '../components/Toast';
 import { User, Phone, Mail, Building, MapPin, Grid, Users, ArrowRight, ArrowLeft, Check, Sparkles } from 'lucide-react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firestore';
+import { isFirebaseConfigured, isMockFirebase } from '../firebase';
 
 const LeadFormPage = () => {
   const [step, setStep] = useState(1);
@@ -70,6 +72,15 @@ const LeadFormPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isFirebaseConfigured) {
+      setToast({
+        type: 'error',
+        message:
+          'Firebase is not configured. Please set your Firebase environment variables in frontend/.env or Vercel.'
+      });
+      return;
+    }
+
     const error = validateStep(3);
     if (error) {
       setToast({ type: 'error', message: error });
@@ -78,14 +89,29 @@ const LeadFormPage = () => {
 
     setLoading(true);
     try {
-      const res = await api.post('/api/leads', formData);
-      if (res.data && res.data.success) {
-        setSubmittedLead(res.data.data);
-        setToast({ type: 'success', message: 'Enquiry submitted successfully!' });
-      }
+      
+      const newLeadData = {
+        ...formData,
+        status: 'New Lead',
+        owner: 'Unassigned',
+        internalNotes: [],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+      
+      const docRef = await addDoc(collection(db, 'leads'), newLeadData);
+      
+      setSubmittedLead({
+        _id: docRef.id,
+        ...newLeadData,
+        status: 'New Lead'
+      });
+      setToast({ type: 'success', message: 'Enquiry submitted successfully!' });
     } catch (err) {
-      const errorMsg = err.response?.data?.error || 'Failed to submit enquiry. Please try again.';
-      setToast({ type: 'error', message: errorMsg });
+      console.error('Submission error:', err);
+      const message = err?.message || 'Failed to submit enquiry. Please try again.';
+      const errorCode = err?.code ? ` (${err.code})` : '';
+      setToast({ type: 'error', message: `Submission failed: ${message}${errorCode}` });
     } finally {
       setLoading(false);
     }
@@ -172,6 +198,7 @@ const LeadFormPage = () => {
   return (
     <div className="min-h-[calc(100vh-80px)] py-12 px-4 bg-luxury-cream dark:bg-luxury-dark transition-colors duration-300">
       <div className="max-w-2xl mx-auto bg-luxury-ivory dark:bg-luxury-charcoal border border-luxury-brass/10 hover:border-luxury-brass/25 p-8 rounded-2xl shadow-xl transition-all duration-300">
+
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold font-serif text-luxury-slate dark:text-luxury-ivory">
             Consultation Brief Request
