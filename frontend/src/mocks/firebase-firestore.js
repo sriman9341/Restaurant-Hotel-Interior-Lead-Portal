@@ -10,7 +10,7 @@ const setLocalCollection = (collectionName, data) => {
 
 // Seed default data if empty (e.g. some mock leads so dashboard has beautiful stats)
 const seedInitialData = () => {
-  if (!localStorage.getItem('mock_db_seeded_v2')) {
+  if (!localStorage.getItem('mock_db_seeded_v3')) {
     const mockLeads = [
       {
         id: 'lead-1',
@@ -169,7 +169,7 @@ const seedInitialData = () => {
       { id: 'vend-1', name: 'Apex Civil Contractors', trade: 'Masonry & Dismantling', contact: 'Ramesh Kumar (+91 98450 11223)', rating: 4.8, activeProjects: 2, status: 'Available' },
       { id: 'vend-2', name: 'Elegant Carpentry Labs', trade: 'Millwork & Furniture', contact: "Joseph D'Souza (+91 91102 33445)", rating: 4.9, activeProjects: 3, status: 'Busy' },
       { id: 'vend-3', name: 'Spark MEP Solutions', trade: 'Electrical & Plumbing', contact: 'Arun Verma (+91 88990 44556)', rating: 4.6, activeProjects: 1, status: 'Available' },
-      { id: 'mat-4', name: 'AcoustiSilence Systems', trade: 'Acoustics & Sound-isolation', contact: 'Dr. Srinivas Rao (+91 94440 55667)', rating: 4.7, activeProjects: 1, status: 'Available' },
+      { id: 'vend-4', name: 'AcoustiSilence Systems', trade: 'Acoustics & Sound-isolation', contact: 'Dr. Srinivas Rao (+91 94440 55667)', rating: 4.7, activeProjects: 1, status: 'Available' },
       { id: 'vend-5', name: 'Glass & Glazing Craft', trade: 'Tempered Glass & Facades', contact: 'Mohsin Khan (+91 77660 88990)', rating: 4.5, activeProjects: 0, status: 'Available' }
     ];
 
@@ -179,7 +179,7 @@ const seedInitialData = () => {
     setLocalCollection('projects', mockProjects);
     setLocalCollection('materials', mockMaterials);
     setLocalCollection('vendors', mockVendors);
-    localStorage.setItem('mock_db_seeded_v2', 'true');
+    localStorage.setItem('mock_db_seeded_v3', 'true');
   }
 };
 

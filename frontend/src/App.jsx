@@ -125,6 +125,46 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                <Route
+                  path="/projects"
+                  element={
+                    <ProtectedRoute>
+                      <ProjectsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/materials"
+                  element={
+                    <ProtectedRoute>
+                      <MaterialsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/vendors"
+                  element={
+                    <ProtectedRoute>
+                      <VendorsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/reports"
+                  element={
+                    <ProtectedRoute>
+                      <ReportsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/ai-assistant"
+                  element={
+                    <ProtectedRoute>
+                      <AIAssistantPage />
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
             </div>
           </div>
